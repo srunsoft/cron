@@ -112,6 +112,11 @@ WRAP:
 		}
 		t = t.Add(1 * time.Hour)
 
+		// 当小时进 1 并且对齐之后，分钟就归零
+		if 1<<uint(t.Hour())&s.Hour == 0 {
+			t = t.Add(-time.Duration(t.Minute()) * time.Minute)
+		}
+
 		if t.Hour() == 0 {
 			goto WRAP
 		}
@@ -123,6 +128,11 @@ WRAP:
 			t = t.Truncate(time.Minute)
 		}
 		t = t.Add(1 * time.Minute)
+
+		// 当分钟进 1 并且对齐之后，秒数就归零
+		if 1<<uint(t.Minute())&s.Minute != 0 {
+			t = t.Add(-time.Duration(t.Second()) * time.Second)
+		}
 
 		if t.Minute() == 0 {
 			goto WRAP
